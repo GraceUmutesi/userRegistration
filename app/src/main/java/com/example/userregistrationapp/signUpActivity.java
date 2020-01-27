@@ -31,6 +31,7 @@ public class signUpActivity extends AppCompatActivity {
     private EditText mName,mEmail,mPassword,mConfirmPass,mPhone;
     private ProgressBar loading;
     private Button sButtton;
+    Uri pickedImgUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +72,7 @@ public class signUpActivity extends AppCompatActivity {
         });
     }
 
-    private void CreateAccount(String name, String email, String password, String phone) {
+    private void CreateAccount(final String name, String email, String password, String phone) {
         //A method to create a user account with the above specs
 
         mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -119,6 +120,7 @@ public class signUpActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()){
                                             showMessage("Registration complete");
+                                            updateUi();
 
                                         }
 
@@ -133,6 +135,14 @@ public class signUpActivity extends AppCompatActivity {
 
 
         });
+
+    }
+
+    private void updateUi() {
+
+
+
+
 
     }
 
