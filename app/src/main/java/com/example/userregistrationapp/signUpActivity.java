@@ -3,7 +3,9 @@ package com.example.userregistrationapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -29,9 +31,9 @@ public class signUpActivity extends AppCompatActivity {
     ImageView UserPhoto;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private EditText mName,mEmail,mPassword,mConfirmPass,mPhone;
-    private ProgressBar loading;
+
     private Button sButtton;
-    Uri pickedImgUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,15 +46,32 @@ public class signUpActivity extends AppCompatActivity {
         mConfirmPass = findViewById(R.id.confirmPasswordEditText);
         mPhone = findViewById(R.id.phone);
         sButtton = findViewById(R.id.createUserButton);
-        loading.setVisibility(View.INVISIBLE);
+        UserPhoto = findViewById(R.id.userPicture);
+//        loading = (ProgressBar) findViewById(R.id.progressBar);
+//        loading.setVisibility(View.INVISIBLE);
+        mAuth= FirebaseAuth.getInstance();
+        createAuthStateListener();
+        
+        UserPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >=22){
+                    
+                    checkAndRequestForPermission();
+                }
+                else{
+                    openGallery();
+                }
+            }
+        });
+        
 
         mAuth = FirebaseAuth.getInstance();
 
         sButtton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                sButtton.setVisibility(view.INVISIBLE);
-                loading.setVisibility(view.INVISIBLE);
+//                loading.setVisibility(view.VISIBLE);
                 final String name = mName.getText().toString();
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
@@ -61,8 +80,8 @@ public class signUpActivity extends AppCompatActivity {
 
                 if (name.isEmpty()|| email.isEmpty()||password.isEmpty()||confirmPassword.isEmpty()||phone.isEmpty()){
                     showMessage("Please fill the above fields");
-                    sButtton.setVisibility(View.VISIBLE);
-                    loading.setVisibility(View.INVISIBLE);
+//                    sButtton.setVisibility(View.VISIBLE);
+//                    loading.setVisibility(View.INVISIBLE);
                 }
                 else {
                     CreateAccount(name,email,password,phone);
@@ -70,6 +89,28 @@ public class signUpActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void createAuthStateListener() {
+        mAuthListener =new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                final  FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user!= null){
+                    Intent intent = new Intent(signUpActivity.this,HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+
+            }
+        };
+    }
+
+    private void openGallery() {
+    }
+
+    private void checkAndRequestForPermission() {
     }
 
     private void CreateAccount(final String name, String email, String password, String phone) {
@@ -82,7 +123,7 @@ public class signUpActivity extends AppCompatActivity {
                     //when the account has been created succesfully
                     showMessage("successfully created");
 
-                    updatedUserInfo(name, pickedImgUri,mAuth.getCurrentUser());
+//                    updatedUserInfo(name, pickedImgUri,mAuth.getCurrentUser());
 
 
                 }
@@ -90,8 +131,8 @@ public class signUpActivity extends AppCompatActivity {
                     //when the account has failed to be created
 
                     showMessage("account creation failed");
-                    sButtton.setVisibility(View.VISIBLE);
-                    loading.setVisibility(View.INVISIBLE);
+
+//                    loading.setVisibility(View.INVISIBLE);
 
 
                 }
@@ -139,7 +180,9 @@ public class signUpActivity extends AppCompatActivity {
     }
 
     private void updateUi() {
-
+        Intent intent = new Intent(getApplicationContext(), com.example.userregistrationapp.HomeActivity.class);
+        startActivity(intent);
+        finish();
 
 
 
